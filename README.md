@@ -19,6 +19,63 @@ This Streamlit app provides stock price predictions and sentiment analysis using
 * **Company Name Resolution:** Automatically retrieves the full company name associated with the provided ticker symbol.
 
 
+## Installation
+
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/your-username/your-repository-name.git 
+   cd your-repository-name
+   ```
+
+2. **Create a Virtual Environment (Recommended):**
+   ```bash
+   python3 -m venv .venv  # Use a descriptive name
+   source .venv/bin/activate  # Activate (Linux/macOS)
+   .venv\Scripts\activate      # Activate (Windows)
+   ```
+
+3. **Install Dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+   Where `requirements.txt` contains:
+   ```
+   google-generative-ai>=0.2.0
+   nltk>=3.8.1
+   plotly>=5.0.0
+   prophet>=1.1.1
+   requests>=2.28.1
+   streamlit>=1.0.0
+   yfinance>=0.2.4
+   pandas>=2.0.0
+   ```
+
+4. **Download NLTK Resources:**
+   ```bash
+   python
+   >>> import nltk
+   >>> nltk.download('vader_lexicon')
+   >>> exit()
+   ```
+
+5. **Set API Keys (In `your_script_name.py`):**
+
+   * **Google Generative AI API Key:** Replace `"YOUR_GOOGLE_API_KEY"`.
+   * **NewsAPI Key:** Replace `"YOUR_NEWSAPI_KEY"`.
+
+
+## Usage
+
+1. **Run the Streamlit app:**
+   ```bash
+   streamlit run your_script_name.py
+   ```
+
+2. **Enter Stock Ticker and Period:** Input the desired stock ticker and select the data period in the app interface.
+
+3. **Click "Predict":** The app will fetch data, generate predictions, analyze sentiment, and display the results.
+
 
 ## How it Works
 

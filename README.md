@@ -45,6 +45,79 @@ This app utilizes several key technologies and methodologies to provide its pred
    - Links to the relevant news articles are provided to allow users to delve deeper into the information driving the sentiment analysis.
 
 
+## Core Code Snippets Explained
+
+**1. Data Retrieval:**
+
+```python
+import yfinance as yf
+
+def get_stock_data(ticker, period="5y"):
+    data = yf.download(ticker, period=period)  # Downloads historical data
+    return data['Close']  # Returns closing prices
+```
+
+This function uses `yfinance` to download historical stock data for a given ticker and period. It returns the closing prices.
+
+**2. Prophet Forecasting:**
+
+```python
+from prophet import Prophet
+import pandas as pd
+
+def predict_prophet(data, forecast_days=7):
+    df = pd.DataFrame({'ds': data.index, 'y': data.values}) # Formats data for Prophet
+    model = Prophet()
+    model.fit(df) # Trains the Prophet model
+    future = model.make_future_dataframe(periods=forecast_days)
+    forecast = model.predict(future) # Makes predictions
+    return forecast # Returns the forecast DataFrame
+```
+
+This function takes the historical data, formats it for Prophet, trains a Prophet model, and generates future predictions.
+
+**3. Sentiment Analysis:**
+
+```python
+from nltk.sentiment.vader import SentimentIntensityAnalyzer
+
+def analyze_sentiment(text):
+    analyzer = SentimentIntensityAnalyzer()
+    scores = analyzer.polarity_scores(text) # Calculates sentiment scores
+    return scores
+```
+
+This function uses VADER to analyze the sentiment of a given text and returns the polarity scores.
+
+**4. News Retrieval and Display:**
+
+```python
+import requests as req
+
+def NEWSrequest_newsapi(api_url):
+    newsapi_req = req.get(api_url).json()
+    # ... (Code to extract title, description, source, URL)
+    return TITLE_list, DESCRIPTION_list, SOURCE_list, URL_list
+# ... (Code to display news in Streamlit)
+```
+
+This snippet retrieves news data from NewsAPI, extracts relevant information, and then uses Streamlit's functionalities (e.g., `st.write`, `st.link_button`) to display the news articles within the app.
+
+
+**5. Plotly Charting:**
+
+```python
+import plotly.graph_objects as go
+
+fig = go.Figure()
+fig.add_trace(go.Scatter(x=data.index, y=data.values, mode='lines', name='Historical Data'))
+fig.add_trace(go.Scatter(x=forecast['ds'], y=forecast['yhat'], mode='lines', name='Forecast'))
+# ... (Code to add other traces like upper and lower bounds)
+st.plotly_chart(fig) # Displays the chart in Streamlit
+```
+This section demonstrates how Plotly is used to create interactive charts.  It adds traces for historical data, the forecast, and optionally, the upper and lower confidence bounds of the forecast.  The `st.plotly_chart()` function then renders the chart in the Streamlit app.
+
+
 ## Technologies Used
 
 * **Streamlit:**  Framework for building interactive web apps.

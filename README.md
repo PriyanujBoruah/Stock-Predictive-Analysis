@@ -23,8 +23,8 @@ This Streamlit app provides stock price predictions and sentiment analysis using
 
 1. **Clone the Repository:**
    ```bash
-   git clone https://github.com/your-username/your-repository-name.git 
-   cd your-repository-name
+   git clone https://github.com/PriyanujBoruah/Stock-Predictive-Analysis.git
+   cd Stock-Predictive-Analysis
    ```
 
 2. **Create a Virtual Environment (Recommended):**
@@ -59,7 +59,7 @@ This Streamlit app provides stock price predictions and sentiment analysis using
    >>> exit()
    ```
 
-5. **Set API Keys (In `your_script_name.py`):**
+5. **Set API Keys (In `app.py`):**
 
    * **Google Generative AI API Key:** Replace `"YOUR_GOOGLE_API_KEY"`.
    * **NewsAPI Key:** Replace `"YOUR_NEWSAPI_KEY"`.
@@ -69,7 +69,7 @@ This Streamlit app provides stock price predictions and sentiment analysis using
 
 1. **Run the Streamlit app:**
    ```bash
-   streamlit run your_script_name.py
+   streamlit run app.py
    ```
 
 2. **Enter Stock Ticker and Period:** Input the desired stock ticker and select the data period in the app interface.

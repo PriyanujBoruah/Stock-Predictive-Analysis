@@ -104,7 +104,7 @@ def analyze_sentiment(text):
 #with open( "style.css" ) as css:
 #    st.markdown( f'<style>{css.read()}</style>' , unsafe_allow_html= True)
 
-nltk.download('vader_lexicon')
+#nltk.download('vader_lexicon')
 
 GOOGLE_API_KEY = st.secrets["GOOGLE_API_key"]
 NEWS_API_KEY = st.secrets["NEWS_API_key"]

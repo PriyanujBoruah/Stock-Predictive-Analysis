@@ -10,7 +10,7 @@ from google.generativeai.types import HarmCategory, HarmBlockThreshold
 import nltk
 from nltk.sentiment.vader import SentimentIntensityAnalyzer
 
-st.set_page_config(page_title="Stock Predictive Analysis by Priyanuj", page_icon=None, layout="centered", initial_sidebar_state="auto", menu_items=None)
+st.set_page_config(page_title="Stock Predictive Analysis by Priyanuj", page_icon=None, layout="wide", initial_sidebar_state="auto", menu_items=None)
 
 def get_stock_data(ticker, period="5y"):
     """Retrieves historical stock data from Yahoo Finance."""
@@ -106,7 +106,10 @@ def analyze_sentiment(text):
 
 nltk.download('vader_lexicon')
 
-GOOGLE_API_KEY = 'AIzaSyDQk5vlrxJxWRdGIpRpWz6dIRnQ9en3ilc'
+GOOGLE_API_KEY = st.secrets["GOOGLE_API_key"]
+NEWS_API_KEY = st.secrets["NEWS_API_key"]
+
+
 genai.configure(api_key=GOOGLE_API_KEY)
 
 model = genai.GenerativeModel('gemini-1.5-flash')
@@ -116,13 +119,15 @@ model = genai.GenerativeModel('gemini-1.5-flash')
 # Streamlit app
 st.html(f"<h1 style='text-align: center; color: #2f3133'>Stock<span style='color: #076EFF'> Predictive </span>Analysis <span style='font-size: medium;'>by <span style='color: #076EFF'>Priyanuj Boruah</span></span></h1>")
 
-CONTAINER = st.container(border=True)
+TOP_COL1, TOP_COL2, TOP_COL3, TOP_COL4 = st.columns(4, vertical_alignment="bottom")
 
-TOP_COL1, TOP_COL2 = CONTAINER.columns(2)
-ticker = TOP_COL1.text_input("Stock Ticker (e.g., AAPL, MSFT):")
-period = TOP_COL2.selectbox("Data period:", ["1y", "2y", "5y", "10y"], index=2)  # Default to 5y
+ticker = TOP_COL2.text_input("Stock Ticker (e.g., AAPL, MSFT):")
+period = TOP_COL3.selectbox("Data period:", ["1y", "2y", "5y", "10y"], index=2)  # Default to 5y
 
-if CONTAINER.button("Predict", type="primary"):
+if TOP_COL4.button("Predict", type="primary"):
+    
+    STOCK, NEWS = st.columns([2,1])
+
     data = get_stock_data(ticker, period)
 
     if data is not None:
@@ -131,16 +136,16 @@ if CONTAINER.button("Predict", type="primary"):
 
         if next_day_prophet is not None:
             ticker_org = NAME(ticker)
-            CONTAINER.html(f"<h2 style='color: #076EFF'>{ticker_org}</h2>")
-            CONTAINER.html(f"<h4>Expected Value Tomorrow: <b style='color: #076EFF'>{next_day_prophet:.2f}</b></h4>")
-            WEEK_COL, MEDIA_COL = CONTAINER.columns(2)
+            STOCK.html(f"<h2 style='color: #076EFF'>{ticker_org}</h2>")
+            STOCK.html(f"<h4>Expected Value Tomorrow: <b style='color: #076EFF'>{next_day_prophet:.2f}</b></h4>")
+            WEEK_COL, MEDIA_COL = STOCK.columns(2)
             if weekly_change_prophet > 0:
                 WEEK_COL.html(f"<p style='font-size: large'>Expected Weekly Change: <b style='color: #076EFF'>{weekly_change_prophet:.2f}%</b></p>")
             else:
                 WEEK_COL.html(f"<p style='font-size: large'>Expected Weekly Change: <b style='color: red'>{weekly_change_prophet:.2f}%</b></p>")
 
 
-            api_url1 = f"https://newsapi.org/v2/everything?q={ticker_org}&apiKey=829149e4dcec4bdea50a9a1a8d0b9e5b"
+            api_url1 = f"https://newsapi.org/v2/everything?q={ticker_org}&apiKey={NEWS_API_KEY}"
             TITLE_list1, DESCRIPTION_list1, SOURCE_list1, URL_list1 = NEWSrequest_newsapi(api_url1)
             
             SENTIMENT_LIST = []
@@ -159,30 +164,37 @@ if CONTAINER.button("Predict", type="primary"):
             
             # Create Plotly figure
             fig = go.Figure()
-            fig.add_trace(go.Scatter(x=data.index, y=data.values, mode='lines', name='Historical Data'))
-            fig.add_trace(go.Scatter(x=forecast['ds'], y=forecast['yhat'], mode='lines', name='Forecast'))
-            fig.add_trace(go.Scatter(x=forecast['ds'], y=forecast['yhat_lower'], mode='lines', line=dict(color='darkviolet'), name='Lower Bound', fill='tonexty', fillcolor='lightblue'))
-            fig.add_trace(go.Scatter(x=forecast['ds'], y=forecast['yhat_upper'], mode='lines', line=dict(color='orangered'), name='Upper Bound', fill='tonexty', fillcolor='lightblue'))
-
+            
+            fig.add_trace(go.Scatter(x=forecast['ds'], y=forecast['yhat_lower'], mode='lines', line=dict(color='DarkBlue'), name='Lower Bound', fill='tonexty', fillcolor='lightblue'))
+            fig.add_trace(go.Scatter(x=forecast['ds'], y=forecast['yhat_upper'], mode='lines', line=dict(color='DodgerBlue'), name='Upper Bound', fill='tonexty', fillcolor='lightblue'))
+            fig.add_trace(go.Scatter(x=data.index, y=data.values, mode='lines', line=dict(color='DeepPink'), name='Historical Data'))
+            fig.add_trace(go.Scatter(x=forecast['ds'], y=forecast['yhat'], mode='lines', line=dict(color='black'), name='Forecast'))
+            
             fig.update_layout(title=f"{ticker} Stock Price Forecast",
                               xaxis_title="Date",
                               yaxis_title="Price")
-            CONTAINER.plotly_chart(fig)
+            STOCK.plotly_chart(fig)
 
     
             
+            NEWS_CONTAINER = NEWS.container(border=True, height=600)
 
+            NEWS_CONTAINER.html(f"<h3>Latest news related to {ticker_org}</h3>")
 
-            st.html(f"<h2>Latest news related to {ticker_org}</h2>")
+            news_count = 0
 
             for i in range(len(TITLE_list1)):
-                if TITLE_list1[i] != "[Removed]" and DESCRIPTION_list1[i] != "[Removed]":
-                    st.html(f"<h3 style='font-size: large'>{TITLE_list1[i]}</h3>")
-                    st.html(f"<p style='font-size: large'>{DESCRIPTION_list1[i]}</p>")
-                    SOURCE_COL, URL_COL = st.columns(2, vertical_alignment="center")
-                    SOURCE_COL.html(f"<p><b>{SOURCE_list1[i]}</b></p>")
-                    URL_COL.link_button("See News", URL_list1[i])
-                    st.write("---")
+                if news_count < 10:
+                    if TITLE_list1[i] not in ["None", "[Removed]"] and DESCRIPTION_list1[i] not in ["None", "[Removed]"]:
+                        NEWS_CONTAINER.html(f"<h3 style='font-size: large'>{TITLE_list1[i]}</h3>")
+                        NEWS_CONTAINER.html(f"<p style='font-size: large'>{DESCRIPTION_list1[i]}</p>")
+                        SOURCE_COL, URL_COL = NEWS_CONTAINER.columns(2, vertical_alignment="center")
+                        SOURCE_COL.html(f"<p><b>{SOURCE_list1[i]}</b></p>")
+                        URL_COL.link_button("See News", URL_list1[i])
+                        NEWS_CONTAINER.write("---")
+                        news_count += 1
 
     else:
         st.write("Error fetching stock data. Please check the ticker symbol and period.")
+
+    

@@ -1,7 +1,5 @@
 # Stock Predictive Analysis
 
-[![Streamlit App](https://static.streamlit.io/badges/streamlit_badge_dark.svg)](https://your-streamlit-app-url.streamlit.app/)
-
 
 This Streamlit app provides stock price predictions and sentiment analysis using a combination of historical data, advanced time series forecasting with the Prophet model, and real-time news sentiment analysis.  It's designed to offer users a comprehensive view of a stock's potential future performance by combining quantitative analysis with qualitative insights derived from news articles.
 

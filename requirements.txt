@@ -1,0 +1,8 @@
+google-generative-ai
+nltk
+plotly
+prophet
+requests
+streamlit
+yfinance
+pandas

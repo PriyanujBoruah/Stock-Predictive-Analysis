@@ -175,6 +175,73 @@ st.plotly_chart(fig) # Displays the chart in Streamlit
 This section demonstrates how Plotly is used to create interactive charts.  It adds traces for historical data, the forecast, and optionally, the upper and lower confidence bounds of the forecast.  The `st.plotly_chart()` function then renders the chart in the Streamlit app.
 
 
+## Get API Keys
+
+**1. Google Generative AI API Key:**
+
+* **Obtain the key:**
+    * Go to [https://aistudio.google.com/app/apikey](https://aistudio.google.com/app/apikey) (you might need to be logged in to your Google account).
+    * Create a new API key.  Give it a descriptive name so you can recognize it later.  Copy the generated key.
+* **Add to your code:** In your Python script (e.g., `your_script_name.py`), you'll need to set the environment variable `GOOGLE_API_KEY` or pass your api key directly to the `genai.configure()` method.  Here are both methods. Make sure to choose only one:
+
+   ```python
+   import google.generativeai as genai
+   import os
+   # Method 1. Using environment variables:
+   os.environ["GOOGLE_API_KEY"] = "YOUR_GOOGLE_API_KEY" # Replace with your actual key
+   genai.configure()
+   # ---- OR ----
+   # Method 2: Passing the API key directly
+   genai.configure(api_key="YOUR_GOOGLE_API_KEY")  # Replace with your actual key
+
+
+   ```
+   Replace `"YOUR_GOOGLE_API_KEY"` with the API key you copied from the Google AI Studio website.
+
+
+**2. NewsAPI Key:**
+
+* **Obtain the key:**
+    * Go to [https://newsapi.org/account](https://newsapi.org/account) (you'll need to create an account if you don't already have one).
+    * Subscribe to a plan (there's a free tier available).
+    * Obtain your API key.
+* **Add to your code:**  There are two main ways to integrate your NewsAPI key:
+
+    * **Directly in the API URL:**  This is the simplest but least secure option for local development.
+        ```python
+        api_url = f"https://newsapi.org/v2/everything?q={company_name}&apiKey=YOUR_NEWSAPI_KEY"  # Replace with your key
+        response = requests.get(api_url)
+        ```
+
+    * **As an environment variable (recommended):** This is more secure, especially for deployed applications.
+        ```python
+        import os
+        import requests
+
+        NEWSAPI_KEY = os.environ.get("NEWSAPI_KEY")  # Get the key from the environment
+
+        if NEWSAPI_KEY is None:
+            raise ValueError("NewsAPI key not found. Set the NEWSAPI_KEY environment variable.")
+
+
+        api_url = f"https://newsapi.org/v2/everything?q={company_name}&apiKey={NEWSAPI_KEY}"
+        response = requests.get(api_url)
+
+
+        ```
+
+        Then, before running your app, you would set the environment variable in your terminal:
+
+        ```bash
+        export NEWSAPI_KEY="YOUR_NEWSAPI_KEY"  # Linux/macOS
+        set NEWSAPI_KEY="YOUR_NEWSAPI_KEY"   # Windows
+        # Or if running from a .env file use. Example is for windows:
+        set -o allexport; source .env; set +o allexport
+        streamlit run your_script_name.py
+
+        ```
+        
+
 ## Technologies Used
 
 * **Streamlit:**  Framework for building interactive web apps.
